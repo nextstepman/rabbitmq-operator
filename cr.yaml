@@ -1,0 +1,6 @@
+apiVersion: senacor.com/v1
+kind: RabbitMQUser
+metadata:
+  name: test
+spec:
+  admin: true

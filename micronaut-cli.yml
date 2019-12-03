@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: rabbitmq.operator
+---
+testFramework: kotlintest
+sourceLanguage: kotlin

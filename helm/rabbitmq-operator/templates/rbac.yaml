@@ -1,0 +1,49 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "rabbitmq-operator.fullname" . }}-role
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "configmaps", "secrets", "pods"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["senacor.com"]
+    resources: ["rabbitmqusers"]
+    verbs: ["get", "watch", "list"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "rabbitmq-operator.fullname" . }}-clusterrole
+rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "rabbitmq-operator.fullname" . }}-clusterrolebinding
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "rabbitmq-operator.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "rabbitmq-operator.fullname" . }}-clusterrole
+  namespace: {{ .Release.Namespace }}
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "rabbitmq-operator.fullname" . }}-rolebinding
+  namespace: {{ .Release.Namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "rabbitmq-operator.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "rabbitmq-operator.fullname" . }}-role
+  namespace: {{ .Release.Namespace }}
+  apiGroup: rbac.authorization.k8s.io
