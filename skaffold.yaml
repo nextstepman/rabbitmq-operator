@@ -1,20 +1,25 @@
-apiVersion: skaffold/v1beta17
+apiVersion: skaffold/v1
 kind: Config
 build:
+  artifacts:
+    - image: rabbitmq-operator
+      jib: {}
   tagPolicy:
     dateTime: {}
-  artifacts:
-  - image: rabbitmq-operator
-    jib: {}
 deploy:
   helm:
     releases:
-    - name: rabbitmq-operator
-      chartPath: ./helm/rabbitmq-operator
-      recreatePods: true
-      values:
-        imageName: rabbitmq-operator
-      #wait: true
-#  kubectl:
-#    manifests:
-#      - manifest.yaml
+      - name: rabbitmq-operator
+        chartPath: ./helm/rabbitmq-operator
+        values:
+          image: rabbitmq-operator
+        recreatePods: true
+        imageStrategy:
+          helm: {}
+
+profiles:
+  - name: kubectl
+    deploy:
+      kubectl:
+        manifests:
+          - manifest.yaml
